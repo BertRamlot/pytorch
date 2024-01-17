@@ -139,7 +139,7 @@ class RandomSampler(Sampler[int]):
         if not isinstance(self.replacement, bool):
             raise TypeError(f"replacement should be a boolean value, but got replacement={self.replacement}")
 
-        if not isinstance(self.num_samples, int) or self.num_samples <= 0:
+        if not isinstance(self.num_samples, int) or self.num_samples < 0:
             raise ValueError(f"num_samples should be a positive integer value, but got num_samples={self.num_samples}")
 
     @property
@@ -151,6 +151,8 @@ class RandomSampler(Sampler[int]):
 
     def __iter__(self) -> Iterator[int]:
         n = len(self.data_source)
+        if n == 0:
+            return iter([])
         if self.generator is None:
             seed = int(torch.empty((), dtype=torch.int64).random_().item())
             generator = torch.Generator()
